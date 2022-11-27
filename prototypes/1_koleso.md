@@ -14,7 +14,7 @@ V NS3 simuláciach sa konfigurácie inštalujú buď na uzly, alebo na kontajner
 
 Rozhranie front-endu je rozdelené na 5 častí - ľavý, pravý drawer, v ktorom sú HTML formy na konfiguráciu topológie, horný toolbar, v ktorom sa dá prepínať medzi hlavnými scénami a dolný toolbar, v ktorom je tlačidlo na komunikáciu s backendom. Hlavná scéna má 2 režimy - jeden na interaktívne vytváranie topológie a druhý na zobrazenie výsledkov simulácie. Prepínať medzi režimi sa dá čez tlačidlá v hornom toolbare.
 
-![](/media/1/fe_1.png)
+![](/prototypes/media/1/fe_1.png)
 
 ### Kontajner a jeho atribúty
  - Unikátny názov kontajneru
@@ -189,4 +189,4 @@ API endpoint má 2 pomocné manažéry
 
 V tomto prototype backend posytuje aj jednoduchú statickú web-stránku pod endpointom `GET /` , ktorá slúži na testovanie. V neskorších verziach programu bude odstránená, nakoľko nebude potrebná.
 
-![](/media/1/be_if.png)
+![](/prototypes/media/1/be_if.png)
