@@ -2,7 +2,7 @@
 
 ## Špecifikácia funkcionality
 
-Prototyp bude vedieť zostaviť a simulovať topológiou typu [second.cc](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.cc)/[second.py](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.py). Z topologického hladiska to sú uzly typu CSMA a Point-to-point. Komunikácia medzi uzlami bude zabezpečená UDP echo klientom a serverom. Prototyp bude vedieť zostaviť topológiu s ľubovoľným počtom uzlov, klientov a serverov, ktorá sa bude dať odsimulovať.
+Prototyp bude vedieť zostaviť a simulovať topológiou typu [second.cc](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.cc) a [second.py](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.py). Z topologického hladiska to sú uzly typu CSMA a Point-to-point. Komunikácia medzi uzlami bude zabezpečená UDP echo klientom a serverom. Prototyp bude vedieť zostaviť topológiu s ľubovoľným počtom uzlov, klientov a serverov, ktorá sa bude dať odsimulovať.
 
 ## Vybrané technológie
 Front-end je implementovaný v jazyku svelte, oproti iným webovým frameworkom je rýchlejší,  nakoľko je kompilovaný a po builde neobsahuje zbytčnosti. Back-end je implementovaný v jazyku python s frameworkom Flask.
@@ -13,6 +13,8 @@ Front-end je implementovaný v jazyku svelte, oproti iným webovým frameworkom 
 V NS3 simuláciach sa konfigurácie inštalujú buď na uzly, alebo na kontajnery, ktoré obsahujú viacero uzlov s rovnakou konfiguráciou. Z tohoto dôvodu bude implementácia uzlov zjednotená do kontajnerov. Pre prehľadnosť a reaktivitu sú všetky vlastnosti konfigurácie uložené v globálnom svelte store.
 
 Rozhranie front-endu je rozdelené na 5 častí - ľavý, pravý drawer, v ktorom sú HTML formy na konfiguráciu topológie, horný toolbar, v ktorom sa dá prepínať medzi hlavnými scénami a dolný toolbar, v ktorom je tlačidlo na komunikáciu s backendom. Hlavná scéna má 2 režimy - jeden na interaktívne vytváranie topológie a druhý na zobrazenie výsledkov simulácie. Prepínať medzi režimi sa dá čez tlačidlá v hornom toolbare.
+
+![](/media/1/fe_1.png)
 
 ### Kontajner a jeho atribúty
  - Unikátny názov kontajneru
@@ -56,7 +58,103 @@ Do kontajnerov sa budú môcť vkladať uzly. Každý uzol môže byť v ľubovo
 
 Konfigurácia je implementovaná cez HTML formuláry a pridávanie a odoberanie uzlov cez grafické drag-and-drop interaktívne rozhranie. Spojenia medzi uzlami v rámci kontajneru budú dynamicky graficky zobrazené.
 
-Aplikácia vytvorí veľký JSON obsahujúci celú konfiguráciu scenára, ktorá bude sparsovaná a odsimulovaná na back-ende. Výstup sa bude vedieť vizualizovať jednoduchou formou zobrazenia správ vygenerovaných pri simulácii a možnosťou stiahnuť si vygenerované .pcap súbory.
+Aplikácia vytvorí veľký JSON obsahujúci celú konfiguráciu scenára, ktorá bude sparsovaná a odsimulovaná na back-ende. Výstup sa bude vedieť vizualizovať jednoduchou formou zobrazenia správ vygenerovaných pri simulácii a možnosťou stiahnuť si vygenerované .pcap súbory. Príklad vygenerovaného JSONu:
+```json
+{
+  "topology": {
+    "node_count": 6,
+    "node_containers": [
+      "csma_nodes",
+      "p2p_nodes"
+    ],
+    "container_settings": {
+      "p2p_nodes": {
+        "id": 1,
+        "name": "p2p_nodes",
+        "type": "point_to_point",
+        "data_rate": {
+          "value": 100,
+          "format": "Mbps"
+        },
+        "delay": {
+          "value": 1,
+          "format": "ns"
+        },
+        "network_name": "p2p_interfaces",
+        "network_address": "10.2.2.0",
+        "network_mask": "255.255.255.0",
+        "log_pcap": true,
+        "nodes": [
+          7, 9
+        ]
+      },
+      "csma_nodes": {
+        "id": 0,
+        "name": "csma_nodes_interfaces",
+        "type": "csma",
+        "data_rate": {
+          "value": 100,
+          "format": "Mbps"
+        },
+        "delay": {
+          "value": 1,
+          "format": "ns"
+        },
+        "network_name": "csma_interfaces",
+        "network_address": "10.1.1.0",
+        "network_mask": "255.255.255.0",
+        "log_pcap": true,
+        "nodes": [
+          2, 3, 4, 7
+        ]
+      }
+    }
+  },
+  "simulation": {
+    "server": {
+      "echo_server": {
+        "id": 0,
+        "name": "echo_server",
+        "port": 9,
+        "start": {
+          "value": 1,
+          "format": "s"
+        },
+        "stop": {
+          "value": 10,
+          "format": "s"
+        },
+        "network": "csma_nodes",
+        "node": 7
+      }
+    },
+    "client": {
+      "echo_client": {
+        "id": 0,
+        "name": "echo_client",
+        "port": 9,
+        "start": {
+          "value": 1,
+          "format": "s"
+        },
+        "stop": {
+          "value": 10,
+          "format": "s"
+        },
+        "network": "csma_nodes",
+        "node": 2,
+        "server": "echo_server",
+        "interval": {
+          "value": 1,
+          "format": "s"
+        },
+        "max_packets": 10,
+        "packet_size": 128
+      }
+    }
+  }
+}
+```
 
 ## Implementácia back-endu
 
@@ -81,11 +179,14 @@ Vytiahnuté údaje z JSON objektu sú presmerované do virtuálneho modelu jedno
  - `dumppy` - vráti python zdrojový kód simulačného scenáru modelu
  - `dumpcc` - zatiaľ neimplementované - to isté ale pre jazyk c++.
 
+Na formátovanie elementov ako čas a formát atribútov uzlov slúžia takzvaní helperi, máme implementovaný jeden, `format_helper`, ktorý parsuje údaje na formát, ktorý NS-3 potrebuje.
+
 Parser zavolá všetky moduly a vytvorí zdrojový kód scenáru, ktorý sa uloží na disku a  vykoná v ns-3 simulátori. 
 
 API endpoint má 2 pomocné manažéry
  - File manažér, ktorý má na starosti prácu so súborovým systémom - ukladať vytvorené scenáre na disku, spustenie scenárov, kopírovanie výstupných súborov scenáru do priečinku dostupného cez API. 
  - NS-3 manažér, ktorý má na starosti operácie s NS-3 simulátorom - vykonanie scenáru ak pozná názvy súboru, získanie vygenerovaných logov a podobne.
 
-V tomto prototype backend posytuje aj jednoduchú statickú web-stránku pod endpointom GET / , ktorá slúži na testovanie. V neskorších verziach programu bude odstránená, nakoľko nebude potrebná.
+V tomto prototype backend posytuje aj jednoduchú statickú web-stránku pod endpointom `GET /` , ktorá slúži na testovanie. V neskorších verziach programu bude odstránená, nakoľko nebude potrebná.
 
+![](/media/1/be_if.png)
