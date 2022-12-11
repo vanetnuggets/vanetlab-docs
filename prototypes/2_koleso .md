@@ -1,8 +1,8 @@
-# Prototyp 1 - Koleso
+# Prototyp 2 - Koleso
 
 ## Špecifikácia funkcionality
 
-Prototyp bude vedieť zostaviť a simulovať topológiou typu [second.cc](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.cc) a [second.py](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.py). Z topologického hladiska to sú uzly typu CSMA a Point-to-point. Komunikácia medzi uzlami bude zabezpečená UDP echo klientom a serverom. Prototyp bude vedieť zostaviť topológiu s ľubovoľným počtom uzlov, klientov a serverov, ktorá sa bude dať odsimulovať.
+Prototyp bude vedieť zostaviť a simulovať topológiou typu [second.cc](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.cc) a [second.py](https://github.com/Gabrielcarvfer/NS3/blob/master/examples/tutorial/second.py). Z topologického hladiska to sú uzly typu CSMA, Point-to-point a wifi. Komunikácia medzi uzlami bude zabezpečená UDP echo klientom a serverom. Prototyp bude vedieť zostaviť topológiu s ľubovoľným počtom uzlov, klientov a serverov, ktorá sa bude dať odsimulovať.
 
 ## Vybrané technológie
 Front-end je implementovaný v jazyku svelte, oproti iným webovým frameworkom je rýchlejší,  nakoľko je kompilovaný a po builde neobsahuje zbytčnosti. Back-end je implementovaný v jazyku python s frameworkom Flask.
@@ -12,9 +12,15 @@ Front-end je implementovaný v jazyku svelte, oproti iným webovým frameworkom 
 ## Front-end
 V NS3 simuláciach sa konfigurácie inštalujú buď na uzly, alebo na kontajnery, ktoré obsahujú viacero uzlov s rovnakou konfiguráciou. Z tohoto dôvodu bude implementácia uzlov zjednotená do kontajnerov. Pre prehľadnosť a reaktivitu sú všetky vlastnosti konfigurácie uložené v globálnom svelte store.
 
-Rozhranie front-endu je rozdelené na 5 častí - ľavý, pravý drawer, v ktorom sú HTML formy na konfiguráciu topológie, horný toolbar, v ktorom sa dá prepínať medzi hlavnými scénami a dolný toolbar, v ktorom je tlačidlo na komunikáciu s backendom. Hlavná scéna má 2 režimy - jeden na interaktívne vytváranie topológie a druhý na zobrazenie výsledkov simulácie. Prepínať medzi režimi sa dá čez tlačidlá v hornom toolbare.
+Rozhranie front-endu našej aplikácie je rozdelené na 5 častí - horný a dolný toolbar, ľavý a pravý drawer, a nakoniec halvný kontend ktorý sa nachádza v strede obrazovky. Horný a dolný toolbar slúžia najmä na komunikáciu z backendom a zobrazovanie vrátenej výslednej konfigurácie. Na dolnom toolbare sa nachádza tlačidlo **"Send scenario"**. Toto tlačidlo posiela scenáre nakonfigurované z front-endu na back-end. Odpoveď sa dá následne zobraziť cez tlačidlo **"summary DragDrop"**, ktoré sa nachádza v hornom toolbare.
 
-![](/prototypes/media/1/fe_1.png)
+Ďalšimi dôležitými častami front-endu sú pravý a ľaví drawer. Pravý drawer nám bližšie popisuje, čo sa nachádza na obrazovke v sekcií hlavný kontent. Tu sa ukazujú informácie o aktuálnom node. To znamená posledný node, na ktorý použivateľ ukázal. Nachádza sa tu informácia o id nodu, o jeho realnej polohe v priestore a o aký typ nodu ide. Tento typ je modifikovateľný. Rovnako sú tu spísané aj jednotlivé kontainery, v ktorých sa node nachádza. Ak neexistuje aktuálny node, čo znamená, že používateľ na žiaden neukázal, tento priestor je prázdny. ľavý drawer **tu vojtof***************************************saasd   
+
+V hlavnomn kontente je samtoná Drag and Drop časť aplikácie. Tu používateľ môže vytvárať a jednoduchým pohybom mišky aj posúvať jednotlivé nody. Každý nod predstavuje nejakú objekt, ktorý obsahuje svoje id a červený krížik, ktorý slúži na odstránenie tohto nodu. V prípade, že sú jednotlivé nody vo vzájomnom vzťahu, táto skutočnosť je prezentovaná čiarami, ktoré ich sprájajú. Ak sa niektoré nody nachádzajú vo viacerych kontajnroch naraz, ich vzťah je reprezentovaný jednou čiarou, nad ktorou sú vypísané mená týchto kontajnerov. Tento spôsob bol zvolený pre lepšiu viditeľnosť. V tejto časti bol implemetovaný aj zoom. Funguje na točenie kolieska na miške. Maximálny zoom je 3x a najmänši je 0.3x. Ak však používateľ chce túto funkcionalitu vypnúť, može tak spraciť tlačidlom **"Fix to 1x"**, kde budú pozície a veľkosti jednotlivých nodov vrátené do pôvodenj pozície.
+
+Hlavná scéna má 2 režimy - jeden na interaktívne vytváranie topológie a druhý na zobrazenie výsledkov simulácie. Prepínať medzi režimi sa dá čez tlačidlá v hornom toolbare.
+
+![](/prototypes/media/2/fe_2.png)
 
 ### Kontajner a jeho atribúty
  - Unikátny názov kontajneru
